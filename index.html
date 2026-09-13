@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MayanahBot</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #080808;
+      --panel: #111111;
+      --panel-2: #151515;
+      --border: #262626;
+      --gold: #d4af37;
+      --gold-light: #f0d879;
+      --text: #f5f5f5;
+      --muted: #8d8d8d;
+      --green: #42c77a;
+      --red: #e35d6a;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                   Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+      width: 240px;
+      min-height: 100vh;
+      background: #0d0d0d;
+      border-right: 1px solid var(--border);
+      padding: 28px 18px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    .brand {
+      padding: 4px 12px 32px;
+    }
+
+    .brand-name {
+      color: var(--gold);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: .5px;
+    }
+
+    .brand-sub {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .nav-title {
+      color: #555;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0 12px 10px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav-item {
+      padding: 12px;
+      border-radius: 8px;
+      color: #aaa;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .nav-item.active {
+      background: #1a170e;
+      color: var(--gold-light);
+    }
+
+    .nav-item:hover {
+      background: #171717;
+      color: white;
+    }
+
+    /* MAIN */
+
+    .main {
+      width: 100%;
+      margin-left: 240px;
+      padding: 32px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .page-title {
+      font-size: 27px;
+      font-weight: 650;
+    }
+
+    .page-subtitle {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      padding: 9px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px rgba(66,199,122,.5);
+    }
+
+    /* GRID */
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px;
+    }
+
+    .card-wide {
+      grid-column: span 8;
+    }
+
+    .card-small {
+      grid-column: span 4;
+    }
+
+    .card-full {
+      grid-column: span 12;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .card-description {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* BOT STATUS */
+
+    .bot-status {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .bot-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #19160d;
+      border: 1px solid #3b3117;
+      color: var(--gold);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .bot-name {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .bot-state {
+      color: var(--green);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    /* STATS */
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 16px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .stat-value {
+      margin-top: 7px;
+      font-size: 21px;
+      font-weight: 650;
+    }
+
+    /* FORM */
+
+    .field {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      color: #aaa;
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      background: #0b0b0b;
+      color: white;
+      border-radius: 8px;
+      padding: 12px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: #685521;
+    }
+
+    input::placeholder {
+      color: #555;
+    }
+
+    /* BUTTONS */
+
+    .buttons {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .primary {
+      background: var(--gold);
+      color: #111;
+    }
+
+    .primary:hover {
+      background: var(--gold-light);
+    }
+
+    .secondary {
+      background: #1a1a1a;
+      color: #ddd;
+      border: 1px solid var(--border);
+    }
+
+    .danger {
+      background: #251114;
+      color: #e88992;
+      border: 1px solid #432027;
+    }
+
+    /* PAIRING */
+
+    .pair-box {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 9px;
+      background: #0b0b0b;
+      border: 1px solid #302811;
+    }
+
+    .pair-label {
+      color: var(--muted);
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .pair-code {
+      color: var(--gold-light);
+      font-size: 25px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .message {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ACTIVITY */
+
+    .activity {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .activity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .activity-row:last-child {
+      border-bottom: none;
+    }
+
+    .activity-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .activity-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    .activity-text {
+      font-size: 13px;
+    }
+
+    .activity-time {
+      color: #666;
+      font-size: 11px;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 800px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 18px;
+      }
+
+      .brand {
+        padding-bottom: 18px;
+      }
+
+      .nav-title {
+        display: none;
+      }
+
+      .nav {
+        flex-direction: row;
+        overflow-x: auto;
+      }
+
+      .nav-item {
+        white-space: nowrap;
+      }
+
+      .app {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .card-wide,
+      .card-small,
+      .card-full {
+        grid-column: span 12;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .bot-status {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-name">MayanahBot</div>
+      <div class="brand-sub">Automation Platform</div>
+    </div>
+
+    <div class="nav-title">Workspace</div>
+
+    <nav class="nav">
+      <a href="#" class="nav-item active">Overview</a>
+      <a href="#connection" class="nav-item">Connection</a>
+      <a href="#controls" class="nav-item">Controls</a>
+    </nav>
+  </aside>
+
+
+  <main class="main">
+
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">
+          Manage your MayanahBot WhatsApp connection.
+        </div>
+      </div>
+
+      <div class="status-pill">
+        <span class="dot"></span>
+        <span id="topStatus">Checking status</span>
+      </div>
+    </div>
+
+
+    <section class="grid">
+
+      <!-- BOT STATUS -->
+
+      <div class="card card-wide">
+
+        <div class="card-title">Bot status</div>
+
+        <div class="card-description">
+          Current connection and runtime information.
+        </div>
+
+        <div class="bot-status">
+
+          <div class="status-main">
+            <div class="bot-icon">M</div>
+
+            <div>
+              <div class="bot-name">MayanahBot</div>
+              <div class="bot-state" id="botState">
+                Checking connection...
+              </div>
+            </div>
+          </div>
+
+          <div class="buttons">
+            <button class="secondary" onclick="refreshStatus()">
+              Refresh
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- QUICK STATS -->
+
+      <div class="card card-small">
+
+        <div class="card-title">Overview</div>
+
+        <div class="card-description">
+          Runtime information.
+        </div>
+
+        <div class="stats">
+
+          <div class="stat">
+            <div class="stat-label">Status</div>
+            <div class="stat-value" id="statStatus">—</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Session</div>
+            <div class="stat-value" id="statSession">—</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-label">Service</div>
+            <div class="stat-value">WA</div>
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CONNECTION -->
+
+      <div class="card card-wide" id="connection">
+
+        <div class="card-title">WhatsApp connection</div>
+
+        <div class="card-description">
+          Pair a WhatsApp account with MayanahBot using a secure pairing code.
+        </div>
+
+        <div class="field">
+          <label for="phone">WhatsApp number</label>
+
+          <input
+            id="phone"
+            type="tel"
+            inputmode="numeric"
+            placeholder="2348012345678"
+          >
+        </div>
+
+        <div class="buttons">
+          <button class="primary" onclick="pairBot()">
+            Generate pairing code
+          </button>
+
+          <button class="danger" onclick="disconnectBot()">
+            Disconnect
+          </button>
+        </div>
+
+        <div class="pair-box" id="pairBox">
+          <div class="pair-label">Pairing code</div>
+          <div class="pair-code" id="pairCode">--------</div>
+          <div class="message" id="pairMessage"></div>
+        </div>
+
+      </div>
+
+
+      <!-- CONTROLS -->
+
+      <div class="card card-small" id="controls">
+
+        <div class="card-title">Bot controls</div>
+
+        <div class="card-description">
+          Basic service controls for your connected bot.
+        </div>
+
+        <div class="buttons">
+          <button class="primary" onclick="refreshStatus()">
+            Check connection
+          </button>
+        </div>
+
+      </div>
+
+
+      <!-- ACTIVITY -->
+
+      <div class="card card-full">
+
+        <div class="card-title">Activity</div>
+
+        <div class="card-description">
+          Recent system activity.
+        </div>
+
+        <div class="activity" id="activity">
+
+          <div class="activity-row">
+            <div class="activity-left">
+              <span class="activity-dot"></span>
+              <span class="activity-text">
+                Dashboard initialized
+              </span>
+            </div>
+
+            <span class="activity-time">Now</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+</div>
+
+
+<script>
+  const API_URL = "/api";
+
+  function addActivity(text) {
+    const activity = document.getElementById("activity");
+
+    const row = document.createElement("div");
+    row.className = "activity-row";
+
+    row.innerHTML = `
+      <div class="activity-left">
+        <span class="activity-dot"></span>
+        <span class="activity-text">${text}</span>
+      </div>
+      <span class="activity-time">Now</span>
+    `;
+
+    activity.prepend(row);
+
+    while (activity.children.length > 6) {
+      activity.removeChild(activity.lastChild);
+    }
+  }
+
+
+  async function refreshStatus() {
+    const phone = document.getElementById("phone").value.trim();
+
+    try {
+      let url = API_URL + "/status";
+
+      if (phone) {
+        url += "?number=" + encodeURIComponent(phone);
+      }
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      const connected =
+        data.connected === true ||
+        data.status === "connected";
+
+      document.getElementById("topStatus").textContent =
+        connected ? "Connected" : "Not connected";
+
+      document.getElementById("botState").textContent =
+        connected ? "WhatsApp connected" : "Waiting for connection";
+
+      document.getElementById("statStatus").textContent =
+        connected ? "Online" : "Offline";
+
+      document.getElementById("statSession").textContent =
+        connected ? "Active" : "Idle";
+
+    } catch (error) {
+
+      document.getElementById("topStatus").textContent =
+        "Unavailable";
+
+      document.getElementById("botState").textContent =
+        "Backend unavailable";
+
+      document.getElementById("statStatus").textContent =
+        "Offline";
+
+      document.getElementById("statSession").textContent =
+        "—";
+    }
+  }
+
+
+  async function pairBot() {
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!phone) {
+      alert("Enter your WhatsApp number first.");
+      return;
+    }
+
+    const pairBox = document.getElementById("pairBox");
+    const pairCode = document.getElementById("pairCode");
+    const pairMessage = document.getElementById("pairMessage");
+
+    pairBox.style.display = "block";
+    pairCode.textContent = "--------";
+    pairMessage.textContent = "Generating pairing code...";
+
+    try {
+
+      const response = await fetch(API_URL + "/pair", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          number: phone
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Pairing failed");
+      }
+
+      pairCode.textContent =
+        data.code || data.pairingCode || "--------";
+
+      pairMessage.textContent =
+        "Enter this code in WhatsApp → Linked Devices.";
+
+      addActivity("Pairing code generated");
+
+    } catch (error) {
+
+      pairCode.textContent = "ERROR";
+
+      pairMessage.textContent =
+        error.message || "Unable to generate pairing code.";
+
+      addActivity("Pairing request failed");
+    }
+  }
+
+
+  async function disconnectBot() {
+    const phone = document.getElementById("phone").value.trim();
+
+    if (!phone) {
+      alert("Enter the WhatsApp number first.");
+      return;
+    }
+
+    if (!confirm("Disconnect this WhatsApp session?")) {
+      return;
+    }
+
+    try {
+
+      const response = await fetch(API_URL + "/disconnect", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          number: phone
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Disconnect failed");
+      }
+
+      addActivity("WhatsApp session disconnected");
+
+      await refreshStatus();
+
+    } catch (error) {
+      alert(error.message || "Unable to disconnect.");
+    }
+  }
+
+
+  refreshStatus();
+
+  setInterval(refreshStatus, 5000);
+</script>
+
+</body>
+</html>

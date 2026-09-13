@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MayanahBot — WhatsApp Automation</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #080808;
+      --panel: #101010;
+      --panel2: #141414;
+      --border: #272727;
+      --gold: #d4af37;
+      --gold-light: #f0cf62;
+      --text: #f4f4f4;
+      --muted: #929292;
+      --green: #35c759;
+      --red: #ff453a;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+    }
+
+    header {
+      height: 72px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      background: rgba(8,8,8,.96);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      letter-spacing: .5px;
+    }
+
+    .brand span {
+      color: var(--gold);
+    }
+
+    .status-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(53,199,89,.6);
+    }
+
+    main {
+      width: min(1180px, 92%);
+      margin: 0 auto;
+      padding: 45px 0 70px;
+    }
+
+    .hero {
+      margin-bottom: 30px;
+    }
+
+    .eyebrow {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .hero h2 {
+      font-size: clamp(30px, 5vw, 48px);
+      line-height: 1.05;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      max-width: 650px;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #121212, #0d0d0d);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .card h3 {
+      font-size: 17px;
+      margin-bottom: 7px;
+    }
+
+    .card-sub {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 23px;
+    }
+
+    .connection {
+      grid-row: span 2;
+    }
+
+    label {
+      display: block;
+      color: #c7c7c7;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      height: 50px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #090909;
+      color: white;
+      padding: 0 15px;
+      outline: none;
+      transition: .2s;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      height: 48px;
+      padding: 0 20px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #090909;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-light);
+    }
+
+    .btn-dark {
+      background: #191919;
+      color: white;
+      border: 1px solid var(--border);
+    }
+
+    .btn-dark:hover {
+      border-color: #444;
+    }
+
+    .pair-box {
+      margin-top: 25px;
+      padding: 22px;
+      background: #0a0a0a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: none;
+    }
+
+    .pair-box.active {
+      display: block;
+    }
+
+    .pair-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .pair-code {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: 5px;
+      color: var(--gold);
+      word-break: break-all;
+    }
+
+    .instructions {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: 13px;
+    }
+
+    .status-card {
+      min-height: 170px;
+    }
+
+    .status-main {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-top: 18px;
+    }
+
+    .status-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: rgba(53,199,89,.1);
+      border: 1px solid rgba(53,199,89,.25);
+      color: var(--green);
+      font-size: 20px;
+    }
+
+    .status-title {
+      font-weight: 700;
+    }
+
+    .status-desc {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .stat {
+      background: #0b0b0b;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+    }
+
+    .stat-value {
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .stat-name {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 5px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .controls .btn {
+      flex: 1;
+    }
+
+    .activity {
+      margin-top: 20px;
+    }
+
+    .activity-line {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid #1e1e1e;
+      font-size: 13px;
+    }
+
+    .activity-line:last-child {
+      border-bottom: 0;
+    }
+
+    .activity-label {
+      color: var(--muted);
+    }
+
+    .activity-value {
+      color: #ddd;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px 14px;
+      border-radius: 9px;
+      display: none;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .message.show {
+      display: block;
+    }
+
+    .message.success {
+      background: rgba(53,199,89,.08);
+      color: #8ee9a7;
+      border: 1px solid rgba(53,199,89,.2);
+    }
+
+    .message.error {
+      background: rgba(255,69,58,.08);
+      color: #ffaaa5;
+      border: 1px solid rgba(255,69,58,.2);
+    }
+
+    footer {
+      text-align: center;
+      color: #555;
+      font-size: 11px;
+      padding-top: 35px;
+    }
+
+    @media (max-width: 800px) {
+      header {
+        padding: 0 4%;
+      }
+
+      main {
+        width: 92%;
+        padding-top: 32px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .connection {
+        grid-row: auto;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+      <div class="brand">
+        <div class="brand-mark">M</div>
+        <h1>Mayanah<span>Bot</span></h1>
+      </div>
+
+      <div class="status-top">
+        <span class="dot"></span>
+        <span id="topStatus">System Online</span>
+      </div>
+    </header>
+
+    <main>
+
+      <section class="hero">
+        <div class="eyebrow">WhatsApp Automation Platform</div>
+        <h2>Control your bot.<br>Simply.</h2>
+        <p>
+          Connect your WhatsApp account, manage your session and monitor
+          your MayanahBot automation from one professional dashboard.
+        </p>
+      </section>
+
+      <section class="grid">
+
+        <div class="card connection">
+          <h3>WhatsApp Connection</h3>
+          <p class="card-sub">
+            Pair a WhatsApp number with MayanahBot.
+          </p>
+
+          <label for="phone">WhatsApp Number</label>
+
+          <input
+            id="phone"
+            type="tel"
+            placeholder="2348012345678"
+            autocomplete="tel"
+          >
+
+          <button class="btn btn-gold" id="pairBtn">
+            Generate Pairing Code
+          </button>
+
+          <div id="message" class="message"></div>
+
+          <div id="pairBox" class="pair-box">
+            <div class="pair-label">PAIRING CODE</div>
+
+            <div id="pairCode" class="pair-code">
+              ----
+            </div>
+
+            <div class="instructions">
+              Open WhatsApp → Settings → Linked Devices →
+              Link a Device → Link with phone number instead.
+              Enter the code shown above.
+            </div>
+          </div>
+
+          <div class="activity">
+            <div class="activity-line">
+              <span class="activity-label">Session</span>
+              <span class="activity-value" id="sessionStatus">
+                Not connected
+              </span>
+            </div>
+
+            <div class="activity-line">
+              <span class="activity-label">Phone</span>
+              <span class="activity-value" id="connectedPhone">
+                —
+              </span>
+            </div>
+
+            <div class="activity-line">
+              <span class="activity-label">Engine</span>
+              <span class="activity-value">
+                Baileys
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card status-card">
+          <h3>Bot Status</h3>
+          <p class="card-sub">Live system information.</p>
+
+          <div class="status-main">
+            <div class="status-icon">✓</div>
+
+            <div>
+              <div class="status-title" id="botStatus">
+                Online
+              </div>
+
+              <div class="status-desc" id="botDescription">
+                MayanahBot backend is available.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Manage Bot</h3>
+          <p class="card-sub">
+            Manage the active WhatsApp session.
+          </p>
+
+          <div class="controls">
+            <button class="btn btn-dark" id="refreshBtn">
+              Refresh
+            </button>
+
+            <button class="btn btn-dark" id="disconnectBtn">
+              Disconnect
+            </button>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <div class="stat-value">ON</div>
+              <div class="stat-name">Automation</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-value">WA</div>
+              <div class="stat-name">Platform</div>
+            </div>
+
+            <div class="stat">
+              <div class="stat-value">24/7</div>
+              <div class="stat-name">Availability</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <footer>
+        MayanahBot © 2026 · WhatsApp Automation Platform
+      </footer>
+
+    </main>
+  </div>
+
+  <script>
+    /*
+      MAYANAHBOT API
+      Railway backend
+    */
+
+    const API_ROOT =
+      "https://mayanahbotweb-production.up.railway.app";
+
+    const API_URL =
+      API_ROOT + "/api";
+
+    const phoneInput =
+      document.getElementById("phone");
+
+    const pairBtn =
+      document.getElementById("pairBtn");
+
+    const refreshBtn =
+      document.getElementById("refreshBtn");
+
+    const disconnectBtn =
+      document.getElementById("disconnectBtn");
+
+    const pairBox =
+      document.getElementById("pairBox");
+
+    const pairCode =
+      document.getElementById("pairCode");
+
+    const message =
+      document.getElementById("message");
+
+    const botStatus =
+      document.getElementById("botStatus");
+
+    const botDescription =
+      document.getElementById("botDescription");
+
+    const sessionStatus =
+      document.getElementById("sessionStatus");
+
+    const connectedPhone =
+      document.getElementById("connectedPhone");
+
+    const topStatus =
+      document.getElementById("topStatus");
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = "message show " + type;
+    }
+
+    function normalizePhone(value) {
+      return value
+        .replace(/\D/g, "")
+        .trim();
+    }
+
+    async function checkBackend() {
+      try {
+        const response =
+          await fetch(API_ROOT + "/", {
+            cache: "no-store"
+          });
+
+        if (!response.ok) {
+          throw new Error("Backend unavailable");
+        }
+
+        const data =
+          await response.json();
+
+        if (data.ok) {
+          botStatus.textContent = "Online";
+          botDescription.textContent =
+            "MayanahBot backend is available.";
+
+          topStatus.textContent =
+            "System Online";
+        }
+      } catch (error) {
+        botStatus.textContent =
+          "Offline";
+
+        botDescription.textContent =
+          "Unable to reach the MayanahBot backend.";
+
+        topStatus.textContent =
+          "Connection Error";
+      }
+    }
+
+    async function getStatus() {
+      const phone =
+        normalizePhone(phoneInput.value);
+
+      if (!phone) {
+        return;
+      }
+
+      try {
+        const response =
+          await fetch(
+            API_URL +
+            "/status?number=" +
+            encodeURIComponent(phone),
+            {
+              cache: "no-store"
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (data.connected) {
+          sessionStatus.textContent =
+            "Connected";
+
+          connectedPhone.textContent =
+            phone;
+        } else {
+          sessionStatus.textContent =
+            "Not connected";
+
+          connectedPhone.textContent =
+            "—";
+        }
+
+      } catch (error) {
+        sessionStatus.textContent =
+          "Unavailable";
+      }
+    }
+
+    async function pairWhatsApp() {
+      const phone =
+        normalizePhone(phoneInput.value);
+
+      if (!phone) {
+        showMessage(
+          "Enter your WhatsApp number with country code.",
+          "error"
+        );
+        return;
+      }
+
+      pairBtn.disabled = true;
+      pairBtn.textContent =
+        "Generating...";
+
+      pairBox.classList.remove("active");
+
+      try {
+        const response =
+          await fetch(API_URL + "/pair", {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json"
+            },
+
+            body: JSON.stringify({
+              number: phone
+            })
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.error ||
+            "Unable to generate pairing code."
+          );
+        }
+
+        pairCode.textContent =
+          data.code || "----";
+
+        pairBox.classList.add("active");
+
+        showMessage(
+          "Pairing code generated successfully.",
+          "success"
+        );
+
+        sessionStatus.textContent =
+          "Pairing";
+
+        connectedPhone.textContent =
+          phone;
+
+      } catch (error) {
+        showMessage(
+          error.message ||
+          "Something went wrong.",
+          "error"
+        );
+      } finally {
+        pairBtn.disabled = false;
+        pairBtn.textContent =
+          "Generate Pairing Code";
+      }
+    }
+
+    async function disconnectWhatsApp() {
+      const phone =
+        normalizePhone(phoneInput.value);
+
+      if (!phone) {
+        showMessage(
+          "Enter the WhatsApp number first.",
+          "error"
+        );
+        return;
+      }
+
+      disconnectBtn.disabled = true;
+
+      try {
+        const response =
+          await fetch(
+            API_URL + "/disconnect",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                number: phone
+              })
+            }
+          );
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.error ||
+            "Unable to disconnect."
+          );
+        }
+
+        pairBox.classList.remove("active");
+
+        sessionStatus.textContent =
+          "Disconnected";
+
+        connectedPhone.textContent =
+          "—";
+
+        showMessage(
+          "WhatsApp session disconnected.",
+          "success"
+        );
+
+      } catch (error) {
+        showMessage(
+          error.message ||
+          "Unable to disconnect.",
+          "error"
+        );
+      } finally {
+        disconnectBtn.disabled = false;
+      }
+    }
+
+    pairBtn.addEventListener(
+      "click",
+      pairWhatsApp
+    );
+
+    refreshBtn.addEventListener(
+      "click",
+      async () => {
+        await checkBackend();
+        await getStatus();
+
+        showMessage(
+          "Dashboard refreshed.",
+          "success"
+        );
+      }
+    );
+
+    disconnectBtn.addEventListener(
+      "click",
+      disconnectWhatsApp
+    );
+
+    phoneInput.addEventListener(
+      "input",
+      () => {
+        getStatus();
+      }
+    );
+
+    checkBackend();
+
+    setInterval(
+      checkBackend,
+      10000
+    );
+
+    setInterval(
+      getStatus,
+      5000
+    );
+  </script>
+
+</body>
+</html>
